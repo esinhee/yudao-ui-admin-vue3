@@ -1,4 +1,5 @@
 import request from '@/config/axios'
+import { TransferReqVO } from '@/api/crm/customer'
 
 export interface BusinessVO {
   id: number
@@ -36,6 +37,11 @@ export const getBusiness = async (id: number) => {
   return await request.get({ url: `/crm/business/get?id=` + id })
 }
 
+// 获得 CRM 商机列表（精简）
+export const getSimpleBusinessList = async () => {
+  return await request.get({ url: `/crm/business/simple-all-list` })
+}
+
 // 新增 CRM 商机
 export const createBusiness = async (data: BusinessVO) => {
   return await request.post({ url: `/crm/business/create`, data })
@@ -54,4 +60,19 @@ export const deleteBusiness = async (id: number) => {
 // 导出 CRM 商机 Excel
 export const exportBusiness = async (params) => {
   return await request.download({ url: `/crm/business/export-excel`, params })
+}
+
+// 联系人关联商机列表
+export const getBusinessPageByContact = async (params) => {
+  return await request.get({ url: `/crm/business/page-by-contact`, params })
+}
+
+// 获得 CRM 商机列表
+export const getBusinessListByIds = async (val: number[]) => {
+  return await request.get({ url: '/crm/business/list-by-ids', params: { ids: val.join(',') } })
+}
+
+// 商机转移
+export const transferBusiness = async (data: TransferReqVO) => {
+  return await request.put({ url: '/crm/business/transfer', data })
 }
