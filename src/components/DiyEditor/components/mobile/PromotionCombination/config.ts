@@ -29,6 +29,7 @@ export interface PromotionCombinationProperty {
   // 组件样式
   style: ComponentStyle
 }
+
 // 商品字段
 export interface PromotionCombinationFieldProperty {
   // 是否显示
@@ -43,7 +44,6 @@ export const component = {
   name: '拼团',
   icon: 'mdi:account-group',
   property: {
-    activityId: undefined,
     layoutType: 'oneCol',
     fields: {
       name: { show: true, color: '#000' },

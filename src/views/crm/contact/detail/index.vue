@@ -1,132 +1,112 @@
 <template>
-  <!-- TODO 芋艿：要不要把 3 到 62 合并成一个组件 -->
-  <div v-loading="loading">
-    <div class="flex items-start justify-between">
-      <div>
-        <!-- 左上：客户基本信息 -->
-        <ContactBasicInfo :contact="contact" />
-      </div>
-      <div>
-        <!-- 右上：按钮 -->
-        <el-button @click="openForm('update', contact.id)" v-hasPermi="['crm:contact:update']">
-          编辑
-        </el-button>
-      </div>
-    </div>
-    <el-row class="mt-10px">
-      <el-button>
-        <Icon icon="ph:calendar-fill" class="mr-5px" />
-        创建任务
-      </el-button>
-      <el-button>
-        <Icon icon="carbon:email" class="mr-5px" />
-        发送邮件
-      </el-button>
-      <el-button>
-        <Icon icon="system-uicons:contacts" class="mr-5px" />
-        创建联系人
-      </el-button>
-      <el-button>
-        <Icon icon="ep:opportunity" class="mr-5px" />
-        创建商机
-      </el-button>
-      <el-button>
-        <Icon icon="clarity:contract-line" class="mr-5px" />
-        创建合同
-      </el-button>
-      <el-button>
-        <Icon icon="icon-park:income-one" class="mr-5px" />
-        创建回款
-      </el-button>
-      <el-button>
-        <Icon icon="fluent:people-team-add-20-filled" class="mr-5px" />
-        添加团队成员
-      </el-button>
-    </el-row>
-  </div>
-  <ContentWrap class="mt-10px">
-    <el-descriptions :column="5" direction="vertical">
-      <el-descriptions-item label="客户">
-        {{ contact.customerName }}
-      </el-descriptions-item>
-      <el-descriptions-item label="职务">
-        {{ contact.post }}
-      </el-descriptions-item>
-      <el-descriptions-item label="手机">
-        {{ contact.mobile }}
-      </el-descriptions-item>
-      <el-descriptions-item label="创建时间">
-        {{ contact.createTime ? formatDate(contact.createTime) : '空' }}
-      </el-descriptions-item>
-    </el-descriptions>
-  </ContentWrap>
-  <!-- TODO wanwan：这个 tab 拉满哈，可以更好看； -->
-  <el-col :span="18">
+  <ContactDetailsHeader v-loading="loading" :contact="contact">
+    <el-button v-if="permissionListRef?.validateWrite" @click="openForm('update', contact.id)">
+      编辑
+    </el-button>
+    <el-button v-if="permissionListRef?.validateOwnerUser" type="primary" @click="transfer">
+      转移
+    </el-button>
+  </ContactDetailsHeader>
+  <el-col>
     <el-tabs>
-      <el-tab-pane label="基本信息">
-        <!-- TODO wanwan：这个 ml-2 是不是可以优化下，不要整个左移，而是里面的内容有个几 px 的偏移，不顶在框里 -->
-        <ContactDetails class="ml-2" :contact="contact" />
+      <el-tab-pane label="详细资料">
+        <ContactDetailsInfo :contact="contact" />
       </el-tab-pane>
-      <el-tab-pane label="跟进记录" lazy> 跟进记录</el-tab-pane>
-      <el-tab-pane label="商机" lazy> 商机</el-tab-pane>
-      <el-tab-pane label="附件" lazy> 附件</el-tab-pane>
-      <!-- TODO wanwan 以下标签上的数量需要接口统计返回 -->
-      <el-tab-pane label="操作记录" lazy>
-        <template #label> 操作记录<el-badge :value="12" class="item" type="primary" /> </template>
-        操作记录
+      <el-tab-pane label="操作日志">
+        <OperateLogV2 :log-list="logList" />
+      </el-tab-pane>
+      <el-tab-pane label="团队成员">
+        <PermissionList
+          ref="permissionListRef"
+          :biz-id="contact.id!"
+          :biz-type="BizTypeEnum.CRM_CONTACT"
+          :show-action="!permissionListRef?.isPool || false"
+          @quit-team="close"
+        />
+      </el-tab-pane>
+      <el-tab-pane label="商机" lazy>
+        <BusinessList
+          :biz-id="contact.id!"
+          :biz-type="BizTypeEnum.CRM_CONTACT"
+          :customer-id="contact.customerId"
+        />
       </el-tab-pane>
     </el-tabs>
   </el-col>
-
   <!-- 表单弹窗：添加/修改 -->
-  <ContactForm ref="formRef" @success="getContactData(id)" />
+  <ContactForm ref="formRef" @success="getContactData(contact.id)" />
+  <CrmTransferForm ref="crmTransferFormRef" @success="close" />
 </template>
-
-<script setup lang="ts">
-import { ElMessage } from 'element-plus'
+<script lang="ts" setup>
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import * as ContactApi from '@/api/crm/contact'
-import ContactBasicInfo from '@/views/crm/contact/detail/ContactBasicInfo.vue'
-import ContactDetails from '@/views/crm/contact/detail/ContactDetails.vue'
+import ContactDetailsHeader from '@/views/crm/contact/detail/ContactDetailsHeader.vue'
+import ContactDetailsInfo from '@/views/crm/contact/detail/ContactDetailsInfo.vue'
+import BusinessList from '@/views/crm/business/components/BusinessList.vue' // 商机列表
+import PermissionList from '@/views/crm/permission/components/PermissionList.vue' // 团队成员列表（权限）
+import { BizTypeEnum } from '@/api/crm/permission'
+import { OperateLogV2VO } from '@/api/system/operatelog'
+import { getOperateLogPage } from '@/api/crm/operateLog'
 import ContactForm from '@/views/crm/contact/ContactForm.vue'
-import { formatDate } from '@/utils/formatTime'
-// TODO 芋艿：后面在 review 么？
+import CrmTransferForm from '@/views/crm/permission/components/TransferForm.vue'
 
 defineOptions({ name: 'CrmContactDetail' })
 
-const { delView } = useTagsViewStore() // 视图操作
 const route = useRoute()
-const { currentRoute } = useRouter() // 路由
-const id = Number(route.params.id)
+const message = useMessage()
+const id = Number(route.params.id) // 联系人编号
 const loading = ref(true) // 加载中
-// 联系人详情
-const contact = ref<ContactApi.ContactVO>({} as ContactApi.ContactVO)
-/**
- * 获取详情
- *
- * @param id
- */
+const contact = ref<ContactApi.ContactVO>({} as ContactApi.ContactVO) // 联系人详情
+const permissionListRef = ref<InstanceType<typeof PermissionList>>() // 团队成员列表 Ref
+
+/** 获取详情 */
 const getContactData = async (id: number) => {
   loading.value = true
   try {
     contact.value = await ContactApi.getContact(id)
+    await getOperateLog(id)
   } finally {
     loading.value = false
   }
 }
 
+/** 编辑 */
 const formRef = ref()
 const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
 }
 
-/**
- * 初始化
- */
+/** 联系人转移 */
+const crmTransferFormRef = ref<InstanceType<typeof CrmTransferForm>>() // 联系人转移表单 ref
+const transfer = () => {
+  crmTransferFormRef.value?.open('联系人转移', contact.value.id, ContactApi.transferContact)
+}
+
+/** 获取操作日志 */
+const logList = ref<OperateLogV2VO[]>([]) // 操作日志列表
+const getOperateLog = async (contactId: number) => {
+  if (!contactId) {
+    return
+  }
+  const data = await getOperateLogPage({
+    bizType: BizTypeEnum.CRM_CONTACT,
+    bizId: contactId
+  })
+  logList.value = data.list
+}
+
+/** 关闭窗口 */
+const close = () => {
+  delView(unref(currentRoute))
+}
+
+/** 初始化 */
+const { delView } = useTagsViewStore() // 视图操作
+const { currentRoute } = useRouter() // 路由
 onMounted(async () => {
   if (!id) {
-    ElMessage.warning('参数错误，联系人不能为空！')
-    delView(unref(currentRoute))
+    message.warning('参数错误，联系人不能为空！')
+    close()
     return
   }
   await getContactData(id)

@@ -1,4 +1,5 @@
 import request from '@/config/axios'
+import { TransferReqVO } from '@/api/crm/customer'
 
 export interface ContactVO {
   name: string
@@ -8,7 +9,7 @@ export interface ContactVO {
   email: string
   post: string
   customerId: number
-  address: string
+  detailAddress: string
   remark: string
   ownerUserId: string
   lastTime: Date
@@ -24,6 +25,11 @@ export interface ContactVO {
   customerName: string
   areaName: string
   ownerUserName: string
+}
+
+export interface ContactBusinessReqVO {
+  contactId: number
+  businessIds: number[]
 }
 
 // 查询 CRM 联系人列表
@@ -64,4 +70,24 @@ export const exportContact = async (params) => {
 // 获得 CRM 联系人列表（精简）
 export const getSimpleContactList = async () => {
   return await request.get({ url: `/crm/contact/simple-all-list` })
+}
+
+// 获得 CRM 联系人列表
+export const getContactListByIds = async (val: number[]) => {
+  return await request.get({ url: '/crm/contact/list-by-ids', params: { ids: val.join(',') } })
+}
+
+// 批量新增联系人商机关联
+export const createContactBusinessList = async (data: ContactBusinessReqVO) => {
+  return await request.post({ url: `/crm/contact/create-business-list`, data })
+}
+
+// 解除联系人商机关联
+export const deleteContactBusinessList = async (data: ContactBusinessReqVO) => {
+  return await request.delete({ url: `/crm/contact/delete-business-list`, data })
+}
+
+// 联系人转移
+export const transferContact = async (data: TransferReqVO) => {
+  return await request.put({ url: '/crm/contact/transfer', data })
 }

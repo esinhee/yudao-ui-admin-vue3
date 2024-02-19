@@ -2,14 +2,13 @@ import * as CouponTemplateApi from '@/api/mall/promotion/coupon/couponTemplate'
 import { CouponTemplateValidityTypeEnum, PromotionDiscountTypeEnum } from '@/utils/constants'
 import { floatToFixed2 } from '@/utils'
 import { formatDate } from '@/utils/formatTime'
+import { object } from 'vue-types'
 
 // 优惠值
 export const CouponDiscount = defineComponent({
   name: 'CouponDiscount',
   props: {
-    coupon: {
-      type: CouponTemplateApi.CouponTemplateVO
-    }
+    coupon: object<CouponTemplateApi.CouponTemplateVO>()
   },
   setup(props) {
     const coupon = props.coupon as CouponTemplateApi.CouponTemplateVO
@@ -34,9 +33,7 @@ export const CouponDiscount = defineComponent({
 export const CouponDiscountDesc = defineComponent({
   name: 'CouponDiscountDesc',
   props: {
-    coupon: {
-      type: CouponTemplateApi.CouponTemplateVO
-    }
+    coupon: object<CouponTemplateApi.CouponTemplateVO>()
   },
   setup(props) {
     const coupon = props.coupon as CouponTemplateApi.CouponTemplateVO
@@ -60,9 +57,7 @@ export const CouponDiscountDesc = defineComponent({
 export const CouponValidTerm = defineComponent({
   name: 'CouponValidTerm',
   props: {
-    coupon: {
-      type: CouponTemplateApi.CouponTemplateVO
-    }
+    coupon: object<CouponTemplateApi.CouponTemplateVO>()
   },
   setup(props) {
     const coupon = props.coupon as CouponTemplateApi.CouponTemplateVO
