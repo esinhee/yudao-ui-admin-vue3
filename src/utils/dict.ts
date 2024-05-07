@@ -1,8 +1,8 @@
 /**
  * 数据字典工具类
  */
-import { useDictStoreWithOut } from '@/store/modules/dict'
-import { ElementPlusInfoType } from '@/types/elementPlus'
+import {useDictStoreWithOut} from '@/store/modules/dict'
+import {ElementPlusInfoType} from '@/types/elementPlus'
 
 const dictStore = useDictStoreWithOut()
 
@@ -104,6 +104,7 @@ export enum DICT_TYPE {
   USER_TYPE = 'user_type',
   COMMON_STATUS = 'common_status',
   TERMINAL = 'terminal', // 终端
+  DATE_INTERVAL = 'date_interval', // 数据间隔
 
   // ========== SYSTEM 模块 ==========
   SYSTEM_USER_SEX = 'system_user_sex',
@@ -111,7 +112,6 @@ export enum DICT_TYPE {
   SYSTEM_ROLE_TYPE = 'system_role_type',
   SYSTEM_DATA_SCOPE = 'system_data_scope',
   SYSTEM_NOTICE_TYPE = 'system_notice_type',
-  SYSTEM_OPERATE_TYPE = 'system_operate_type',
   SYSTEM_LOGIN_TYPE = 'system_login_type',
   SYSTEM_LOGIN_RESULT = 'system_login_result',
   SYSTEM_SMS_CHANNEL_CODE = 'system_sms_channel_code',
@@ -134,15 +134,16 @@ export enum DICT_TYPE {
   INFRA_CODEGEN_FRONT_TYPE = 'infra_codegen_front_type',
   INFRA_CODEGEN_SCENE = 'infra_codegen_scene',
   INFRA_FILE_STORAGE = 'infra_file_storage',
+  INFRA_OPERATE_TYPE = 'infra_operate_type',
 
   // ========== BPM 模块 ==========
-  BPM_MODEL_CATEGORY = 'bpm_model_category',
   BPM_MODEL_FORM_TYPE = 'bpm_model_form_type',
-  BPM_TASK_ASSIGN_RULE_TYPE = 'bpm_task_assign_rule_type',
+  BPM_TASK_CANDIDATE_STRATEGY = 'bpm_task_candidate_strategy',
   BPM_PROCESS_INSTANCE_STATUS = 'bpm_process_instance_status',
-  BPM_PROCESS_INSTANCE_RESULT = 'bpm_process_instance_result',
-  BPM_TASK_ASSIGN_SCRIPT = 'bpm_task_assign_script',
+  BPM_TASK_STATUS = 'bpm_task_status',
   BPM_OA_LEAVE_TYPE = 'bpm_oa_leave_type',
+  BPM_PROCESS_LISTENER_TYPE = 'bpm_process_listener_type',
+  BPM_PROCESS_LISTENER_VALUE_TYPE = 'bpm_process_listener_value_type',
 
   // ========== PAY 模块 ==========
   PAY_CHANNEL_CODE = 'pay_channel_code', // 支付渠道编码类型
@@ -157,7 +158,7 @@ export enum DICT_TYPE {
   MP_AUTO_REPLY_REQUEST_MATCH = 'mp_auto_reply_request_match', // 自动回复请求匹配类型
   MP_MESSAGE_TYPE = 'mp_message_type', // 消息类型
 
-  // ========== MALL - 会员模块 ==========
+  // ========== Member 会员模块 ==========
   MEMBER_POINT_BIZ_TYPE = 'member_point_biz_type', // 积分的业务类型
   MEMBER_EXPERIENCE_BIZ_TYPE = 'member_experience_biz_type', // 会员经验业务类型
 
@@ -196,14 +197,15 @@ export enum DICT_TYPE {
   // ========== CRM - 客户管理模块 ==========
   CRM_AUDIT_STATUS = 'crm_audit_status', // CRM 审批状态
   CRM_BIZ_TYPE = 'crm_biz_type', // CRM 业务类型
+  CRM_BUSINESS_END_STATUS_TYPE = 'crm_business_end_status_type', // CRM 商机结束状态类型
   CRM_RECEIVABLE_RETURN_TYPE = 'crm_receivable_return_type', // CRM 回款的还款方式
-  CRM_CUSTOMER_INDUSTRY = 'crm_customer_industry',
-  CRM_CUSTOMER_LEVEL = 'crm_customer_level',
-  CRM_CUSTOMER_SOURCE = 'crm_customer_source',
-  CRM_PRODUCT_STATUS = 'crm_product_status',
+  CRM_CUSTOMER_INDUSTRY = 'crm_customer_industry', // CRM 客户所属行业
+  CRM_CUSTOMER_LEVEL = 'crm_customer_level', // CRM 客户级别
+  CRM_CUSTOMER_SOURCE = 'crm_customer_source', // CRM 客户来源
+  CRM_PRODUCT_STATUS = 'crm_product_status', // CRM 商品状态
   CRM_PERMISSION_LEVEL = 'crm_permission_level', // CRM 数据权限的级别
-  CRM_PRODUCT_UNIT = 'crm_product_unit', // 产品单位
-  CRM_FOLLOW_UP_TYPE = 'crm_follow_up_type', // 跟进方式
+  CRM_PRODUCT_UNIT = 'crm_product_unit', // CRM 产品单位
+  CRM_FOLLOW_UP_TYPE = 'crm_follow_up_type', // CRM 跟进方式
 
   // ========== ERP - 企业资源计划模块  ==========
   ERP_AUDIT_STATUS = 'erp_audit_status', // ERP 审批状态
