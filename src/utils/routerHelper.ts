@@ -73,7 +73,7 @@ export const generateRoute = (routes: AppCustomRouteRecordRaw[]): AppRouteRecord
       noCache: !route.keepAlive,
       alwaysShow:
         route.children &&
-        route.children.length === 1 &&
+        route.children.length > 0 &&
         (route.alwaysShow !== undefined ? route.alwaysShow : true)
     } as any
     // 特殊逻辑：如果后端配置的 MenuDO.component 包含 ?，则表示需要传递参数
@@ -88,7 +88,8 @@ export const generateRoute = (routes: AppCustomRouteRecordRaw[]): AppRouteRecord
     // 2. 生成 data（AppRouteRecordRaw）
     // 路由地址转首字母大写驼峰，作为路由名称，适配keepAlive
     let data: AppRouteRecordRaw = {
-      path: route.path.indexOf('?') > -1 ? route.path.split('?')[0] : route.path,
+      path:
+        route.path.indexOf('?') > -1 && !isUrl(route.path) ? route.path.split('?')[0] : route.path, // 注意，需要排除 http 这种 url，避免它带 ? 参数被截取掉
       name:
         route.componentName && route.componentName.length > 0
           ? route.componentName
@@ -99,7 +100,6 @@ export const generateRoute = (routes: AppCustomRouteRecordRaw[]): AppRouteRecord
     //处理顶级非目录路由
     if (!route.children && route.parentId == 0 && route.component) {
       data.component = Layout
-      data.meta = {}
       data.name = toCamelCase(route.path, true) + 'Parent'
       data.redirect = ''
       meta.alwaysShow = true
@@ -119,7 +119,7 @@ export const generateRoute = (routes: AppCustomRouteRecordRaw[]): AppRouteRecord
       data.children = [childrenData]
     } else {
       // 目录
-      if (route.children) {
+      if (route.children?.length) {
         data.component = Layout
         data.redirect = getRedirect(route.path, route.children)
         // 外链

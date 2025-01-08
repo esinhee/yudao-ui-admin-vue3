@@ -29,15 +29,14 @@
     </el-table-column>
     <el-table-column align="center" label="销量" min-width="90" prop="salesCount" />
     <el-table-column align="center" label="库存" min-width="90" prop="stock" />
-    <el-table-column v-if="spuData.length > 1 && isDelete" align="center" label="操作" min-width="90" >
+    <el-table-column
+      v-if="spuData.length > 1 && deletable"
+      align="center"
+      label="操作"
+      min-width="90"
+    >
       <template #default="scope">
-        <el-button
-          type="primary"
-          link
-          @click="deleteSpu(scope.row.id)"
-        >
-          删除
-        </el-button>
+        <el-button link type="primary" @click="deleteSpu(scope.row.id)"> 删除</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -57,13 +56,13 @@ const props = defineProps<{
   spuList: T[]
   ruleConfig: RuleConfig[]
   spuPropertyListP: SpuProperty<T>[]
-  isDelete?: boolean //spu是否可以多选
+  deletable?: boolean // SPU 是否可删除；
 }>()
 
 const spuData = ref<Spu[]>([]) // spu 详情数据列表
 const skuListRef = ref() // 商品属性列表Ref
 const spuPropertyList = ref<SpuProperty<T>[]>([]) // spuId 对应的 sku 的属性列表
-const expandRowKeys = ref<number[]>() // 控制展开行需要设置 row-key 属性才能使用，该属性为展开行的 keys 数组。
+const expandRowKeys = ref<string[]>([]) // 控制展开行需要设置 row-key 属性才能使用，该属性为展开行的 keys 数组。
 
 /**
  * 获取所有 sku 活动配置
@@ -72,10 +71,10 @@ const expandRowKeys = ref<number[]>() // 控制展开行需要设置 row-key 属
  */
 const getSkuConfigs = (extendedAttribute: string) => {
   skuListRef.value.validateSku()
-  const seckillProducts = []
+  const seckillProducts: any[] = []
   spuPropertyList.value.forEach((item) => {
-    item.spuDetail.skus.forEach((sku) => {
-      seckillProducts.push(sku[extendedAttribute])
+    item.spuDetail.skus?.forEach((sku: any) => {
+      seckillProducts.push(sku[extendedAttribute] as any)
     })
   })
   return seckillProducts
@@ -96,12 +95,12 @@ const emits = defineEmits<{
   (e: 'delete', spuId: number): void
 }>()
 
-/** 多选时可以删除spu **/
+/** 多选时可以删除 SPU **/
 const deleteSpu = async (spuId: number) => {
   await message.confirm('是否删除商品编号为' + spuId + '的数据？')
-  let index = spuData.value.findIndex((item) => item.id == spuId)
-  spuData.value.splice(index,1);
-  emits('delete',spuId)
+  const index = spuData.value.findIndex((item) => item.id == spuId)
+  spuData.value.splice(index, 1)
+  emits('delete', spuId)
 }
 
 /**
@@ -125,10 +124,10 @@ watch(
   () => props.spuPropertyListP,
   (data) => {
     if (!data) return
-    spuPropertyList.value = data as SpuProperty<T>[]
+    spuPropertyList.value = data as SpuProperty<T>[] as any
     // 解决如果之前选择的是单规格 spu 的话后面选择多规格 sku 多规格属性信息不展示的问题。解决方法：让 SkuList 组件重新渲染（行折叠会干掉包含的组件展开时会重新加载）
     setTimeout(() => {
-      expandRowKeys.value = data.map((item) => item.spuId)
+      expandRowKeys.value = data.map((item) => item.spuId + '')
     }, 200)
   },
   {

@@ -114,9 +114,9 @@
                         </el-checkbox>
                       </el-col>
                       <el-col :offset="6" :span="12">
-                        <el-link style="float: right" type="primary">{{
-                          t('login.forgetPassword')
-                        }}</el-link>
+                        <el-link style="float: right" type="primary"
+                          >{{ t('login.forgetPassword') }}
+                        </el-link>
                       </el-col>
                     </el-row>
                   </el-form-item>
@@ -133,6 +133,7 @@
                   </el-form-item>
                 </el-col>
                 <Verify
+                  v-if="loginData.captchaEnable === 'true'"
                   ref="verify"
                   :captchaType="captchaType"
                   :imgSize="{ width: '400px', height: '200px' }"
