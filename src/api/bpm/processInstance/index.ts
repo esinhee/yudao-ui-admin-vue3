@@ -48,6 +48,7 @@ export type ApprovalNodeInfo = {
   status: number
   startTime?: Date
   endTime?: Date
+  processInstanceId?: string
   candidateUsers?: User[]
   tasks: ApprovalTaskInfo[]
 }
@@ -106,4 +107,9 @@ export const getFormFieldsPermission = async (params: any) => {
 // 获取流程实例的 BPMN 模型视图
 export const getProcessInstanceBpmnModelView = async (id: string) => {
   return await request.get({ url: '/bpm/process-instance/get-bpmn-model-view?id=' + id })
+}
+
+// 获取流程实例打印数据
+export const getProcessInstancePrintData = async (id: string) => {
+  return await request.get({ url: '/bpm/process-instance/get-print-data?processInstanceId=' + id })
 }
