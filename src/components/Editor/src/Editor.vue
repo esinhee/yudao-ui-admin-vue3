@@ -40,6 +40,9 @@ const valueHtml = ref('')
 watch(
   () => props.modelValue,
   (val: string) => {
+    if (!val) {
+      val = ''
+    }
     if (val === unref(valueHtml)) return
     valueHtml.value = val
   },
@@ -53,6 +56,16 @@ watch(
   () => valueHtml.value,
   (val: string) => {
     emit('update:modelValue', val)
+  }
+)
+watch(
+  () => props.readonly,
+  (val) => {
+    if (val) {
+      editorRef.value?.disable()
+    } else {
+      editorRef.value?.enable()
+    }
   }
 )
 
@@ -87,6 +100,12 @@ const editorConfig = computed((): IEditorConfig => {
       },
       autoFocus: false,
       scroll: true,
+      EXTEND_CONF: {
+        mentionConfig: {
+          showModal: () => {},
+          hideModal: () => {}
+        }
+      },
       MENU_CONF: {
         ['uploadImage']: {
           server: getUploadUrl(),

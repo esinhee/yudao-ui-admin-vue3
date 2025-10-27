@@ -9,13 +9,13 @@
     label-width="120px"
     size="large"
   >
-    <el-row style="margin-right: -10px; margin-left: -10px">
-      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
+    <el-row class="mx-[-10px]">
+      <el-col :span="24" class="px-10px">
         <el-form-item>
-          <LoginFormTitle style="width: 100%" />
+          <LoginFormTitle class="w-full" />
         </el-form-item>
       </el-col>
-      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
+      <el-col :span="24" class="px-10px">
         <el-form-item v-if="loginData.tenantEnable === 'true'" prop="tenantName">
           <el-input
             v-model="loginData.loginForm.tenantName"
@@ -26,7 +26,7 @@
           />
         </el-form-item>
       </el-col>
-      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
+      <el-col :span="24" class="px-10px">
         <el-form-item prop="username">
           <el-input
             v-model="loginData.loginForm.username"
@@ -35,7 +35,7 @@
           />
         </el-form-item>
       </el-col>
-      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
+      <el-col :span="24" class="px-10px">
         <el-form-item prop="password">
           <el-input
             v-model="loginData.loginForm.password"
@@ -47,10 +47,7 @@
           />
         </el-form-item>
       </el-col>
-      <el-col
-        :span="24"
-        style="padding-right: 10px; padding-left: 10px; margin-top: -20px; margin-bottom: -20px"
-      >
+      <el-col :span="24" class="px-10px mt-[-20px] mb-[-20px]">
         <el-form-item>
           <el-row justify="space-between" style="width: 100%">
             <el-col :span="6">
@@ -60,7 +57,7 @@
             </el-col>
             <el-col :offset="6" :span="12">
               <el-link
-                style="float: right"
+                class="float-right"
                 type="primary"
                 @click="setLoginState(LoginStateEnum.RESET_PASSWORD)"
               >
@@ -70,12 +67,12 @@
           </el-row>
         </el-form-item>
       </el-col>
-      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
+      <el-col :span="24" class="px-10px">
         <el-form-item>
           <XButton
             :loading="loginLoading"
             :title="t('login.login')"
-            class="w-[100%]"
+            class="w-full"
             type="primary"
             @click="getCode()"
           />
@@ -89,27 +86,27 @@
         mode="pop"
         @success="handleLogin"
       />
-      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
+      <el-col :span="24" class="px-10px">
         <el-form-item>
           <el-row :gutter="5" justify="space-between" style="width: 100%">
             <el-col :span="8">
               <XButton
                 :title="t('login.btnMobile')"
-                class="w-[100%]"
+                class="w-full"
                 @click="setLoginState(LoginStateEnum.MOBILE)"
               />
             </el-col>
             <el-col :span="8">
               <XButton
                 :title="t('login.btnQRCode')"
-                class="w-[100%]"
+                class="w-full"
                 @click="setLoginState(LoginStateEnum.QR_CODE)"
               />
             </el-col>
             <el-col :span="8">
               <XButton
                 :title="t('login.btnRegister')"
-                class="w-[100%]"
+                class="w-full"
                 @click="setLoginState(LoginStateEnum.REGISTER)"
               />
             </el-col>
@@ -117,9 +114,9 @@
         </el-form-item>
       </el-col>
       <el-divider content-position="center">{{ t('login.otherLogin') }}</el-divider>
-      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
+      <el-col :span="24" class="px-10px">
         <el-form-item>
-          <div class="w-[100%] flex justify-between">
+          <div class="w-full flex justify-between">
             <Icon
               v-for="(item, key) in socialList"
               :key="key"
@@ -133,9 +130,9 @@
         </el-form-item>
       </el-col>
       <el-divider content-position="center">萌新必读</el-divider>
-      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
+      <el-col :span="24" class="px-10px">
         <el-form-item>
-          <div class="w-[100%] flex justify-between">
+          <div class="w-full flex justify-between">
             <el-link href="https://doc.iocoder.cn/" target="_blank">📚开发指南</el-link>
             <el-link href="https://doc.iocoder.cn/video/" target="_blank">🔥视频教程</el-link>
             <el-link href="https://www.iocoder.cn/Interview/good-collection/" target="_blank">
@@ -177,7 +174,7 @@ const permissionStore = usePermissionStore()
 const redirect = ref<string>('')
 const loginLoading = ref(false)
 const verify = ref()
-const captchaType = ref('blockPuzzle') // blockPuzzle 滑块 clickWord 点击文字
+const captchaType = ref('blockPuzzle') // blockPuzzle 滑块 clickWord 点击文字 pictureWord 文字验证码
 
 const getShow = computed(() => unref(getLoginState) === LoginStateEnum.LOGIN)
 
@@ -239,11 +236,13 @@ const getLoginFormCache = () => {
 }
 // 根据域名，获得租户信息
 const getTenantByWebsite = async () => {
-  const website = location.host
-  const res = await LoginApi.getTenantByWebsite(website)
-  if (res) {
-    loginData.loginForm.tenantName = res.name
-    authUtil.setTenantId(res.id)
+  if (loginData.tenantEnable === 'true') {
+    const website = location.host
+    const res = await LoginApi.getTenantByWebsite(website)
+    if (res) {
+      loginData.loginForm.tenantName = res.name
+      authUtil.setTenantId(res.id)
+    }
   }
 }
 const loading = ref() // ElLoading.service 返回的实例
