@@ -52,7 +52,6 @@ export const setCssVar = (prop: string, val: any, dom = document.documentElement
  * @param {Array} ary 查找的数组
  * @param {Functon} fn 判断的方法
  */
-// eslint-disable-next-line
 export const findIndex = <T = Recordable>(ary: Array<T>, fn: Fn): number => {
   if (ary.findIndex) {
     return ary.findIndex(fn)
@@ -534,4 +533,16 @@ export const subString = (str: string, start: number, end: number) => {
     return str.slice(start, end)
   }
   return str
+}
+
+/** HTML 转义函数，防止 XSS */
+export const escapeHtml = (text: string): string => {
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  }
+  return text.replace(/[&<>"']/g, (char) => map[char])
 }
