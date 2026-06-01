@@ -173,7 +173,7 @@
                 <div class="mr-2.5 flex items-center">
                   <el-image :src="defaultIconUrl" class="w-[18px] h-[18px]" />
                 </div>
-                <div class="text-[16px] font-600 flex-1">{{ item.deviceName }}</div>
+                <div class="text-[16px] font-600 flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{{ item.deviceName }}</div>
                 <!-- 添加设备状态标签 -->
                 <div class="inline-flex items-center">
                   <div
@@ -308,9 +308,9 @@
           </template>
         </template>
       </el-table-column>
-      <el-table-column label="设备状态" align="center" prop="status">
+      <el-table-column label="设备状态" align="center" prop="state">
         <template #default="scope">
-          <dict-tag :type="DICT_TYPE.IOT_DEVICE_STATE" :value="scope.row.status" />
+          <dict-tag :type="DICT_TYPE.IOT_DEVICE_STATE" :value="scope.row.state" />
         </template>
       </el-table-column>
       <el-table-column
@@ -392,7 +392,7 @@ const list = ref<DeviceVO[]>([]) // 列表的数据
 const total = ref(0) // 列表的总页数
 const queryParams = reactive({
   pageNo: 1,
-  pageSize: 10,
+  pageSize: 12,
   deviceName: undefined,
   productId: undefined as number | undefined,
   deviceType: undefined,
